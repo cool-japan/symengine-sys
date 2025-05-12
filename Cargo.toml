@@ -1,0 +1,15 @@
+[package]
+name = "symengine-sys"
+version = "0.1.0+1"
+authors = ["cool-japan <cool-japan@users.noreply.github.com>"]
+license = "MIT"
+description = "Low level bindings to the symengine library (fixed for macOS)"
+repository = "https://github.com/cool-japan/symengine-sys"
+build = "build.rs"
+links = "symengine"
+edition = "2018"
+
+[dependencies]
+
+[build-dependencies]
+bindgen = "0.69.4"  # Updated to a newer version that handles macOS issues better
