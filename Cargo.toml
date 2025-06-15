@@ -1,15 +1,26 @@
 [package]
 name = "symengine-sys"
-version = "0.1.0+1"
-authors = ["cool-japan <cool-japan@users.noreply.github.com>"]
+version = "0.2.0"
+authors = ["KitaSan <info@kitasan.io>"]
 license = "MIT"
 description = "Low level bindings to the symengine library (fixed for macOS)"
 repository = "https://github.com/cool-japan/symengine-sys"
 build = "build.rs"
 links = "symengine"
-edition = "2018"
+edition = "2021"
+rust-version = "1.70"
+categories = ["mathematics", "science", "external-ffi-bindings"]
+keywords = ["symbolic", "computation", "mathematics", "symengine", "bindings"]
 
 [dependencies]
+libc = "0.2"
 
 [build-dependencies]
-bindgen = "0.69.4"  # Updated to a newer version that handles macOS issues better
+bindgen = "0.70"
+cc = "1.0"
+pkg-config = { version = "0.3", optional = true }
+
+[features]
+default = []
+static = []  # Enable static linking
+system-deps = ["pkg-config"]  # Use system dependencies
