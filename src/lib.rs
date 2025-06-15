@@ -117,9 +117,6 @@ pub fn version() -> &'static str {
 
 // Additional function declarations that might not be in the generated bindings
 extern "C" {
-    // Type checking functions
-    pub fn basic_get_type(basic: *const basic_struct) -> c_int;
-    
     // Argument access functions
     pub fn basic_get_args_size(basic: *const basic_struct) -> usize;
     pub fn basic_get_arg(out: *mut basic_struct, basic: *const basic_struct, index: usize) -> c_int;
@@ -130,10 +127,6 @@ extern "C" {
     
     // Symbol operations
     pub fn basic_symbol_get_name(basic: *const basic_struct) -> *const c_char;
-    
-    // Number operations
-    pub fn real_double_get_d(out: *mut f64, basic: *const basic_struct) -> c_int;
-    pub fn integer_get_si(basic: *const basic_struct) -> i64;
 }
 
 /// Check if SymEngine is available at runtime
