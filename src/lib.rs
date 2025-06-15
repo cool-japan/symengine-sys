@@ -39,6 +39,23 @@ pub mod error_codes {
     pub const SYMENGINE_PARSE_ERROR: c_int = 5;
 }
 
+/// SymEngine type codes
+pub mod type_codes {
+    use super::c_int;
+    
+    pub const SYMENGINE_SYMBOL: c_int = 1;
+    pub const SYMENGINE_ADD: c_int = 2;
+    pub const SYMENGINE_MUL: c_int = 3;
+    pub const SYMENGINE_POW: c_int = 4;
+    pub const SYMENGINE_INTEGER: c_int = 5;
+    pub const SYMENGINE_RATIONAL: c_int = 6;
+    pub const SYMENGINE_REAL_DOUBLE: c_int = 7;
+    pub const SYMENGINE_COMPLEX_DOUBLE: c_int = 8;
+}
+
+// Re-export type codes for easier access
+pub use type_codes::*;
+
 /// Result type for SymEngine operations
 pub type SymEngineResult<T> = Result<T, SymEngineError>;
 
@@ -96,6 +113,27 @@ pub fn check_result(code: c_int) -> SymEngineResult<()> {
 /// Version information
 pub fn version() -> &'static str {
     env!("CARGO_PKG_VERSION")
+}
+
+// Additional function declarations that might not be in the generated bindings
+extern "C" {
+    // Type checking functions
+    pub fn basic_get_type(basic: *const basic_struct) -> c_int;
+    
+    // Argument access functions
+    pub fn basic_get_args_size(basic: *const basic_struct) -> usize;
+    pub fn basic_get_arg(out: *mut basic_struct, basic: *const basic_struct, index: usize) -> c_int;
+    
+    // Power operations
+    pub fn basic_pow_get_base(out: *mut basic_struct, basic: *const basic_struct) -> c_int;
+    pub fn basic_pow_get_exp(out: *mut basic_struct, basic: *const basic_struct) -> c_int;
+    
+    // Symbol operations
+    pub fn basic_symbol_get_name(basic: *const basic_struct) -> *const c_char;
+    
+    // Number operations
+    pub fn real_double_get_d(out: *mut f64, basic: *const basic_struct) -> c_int;
+    pub fn integer_get_si(basic: *const basic_struct) -> i64;
 }
 
 /// Check if SymEngine is available at runtime
