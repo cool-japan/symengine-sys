@@ -8,7 +8,8 @@ fn main() {
     println!("cargo:rerun-if-env-changed=MPFR_DIR");
 
     // Try to find SymEngine using pkg-config first
-    if cfg!(feature = "system-deps") {
+    #[cfg(feature = "system-deps")]
+    {
         if let Ok(library) = pkg_config::Config::new()
             .atleast_version("0.11.0")
             .probe("symengine")
@@ -22,7 +23,10 @@ fn main() {
             eprintln!("Warning: pkg-config failed to find SymEngine, falling back to manual detection");
             setup_manual_linking();
         }
-    } else {
+    }
+    
+    #[cfg(not(feature = "system-deps"))]
+    {
         setup_manual_linking();
     }
 
@@ -81,6 +85,18 @@ fn setup_platform_specific() {
             if std::path::Path::new(&lib_path).exists() {
                 println!("cargo:rustc-link-search=native={}", lib_path);
                 println!("cargo:include={}", include_path);
+                
+                // Add specific paths for SymEngine
+                let symengine_opt_path = format!("{}/opt/symengine", base_path);
+                if std::path::Path::new(&symengine_opt_path).exists() {
+                    let symengine_lib = format!("{}/lib", symengine_opt_path);
+                    let symengine_include = format!("{}/include", symengine_opt_path);
+                    if std::path::Path::new(&symengine_lib).exists() {
+                        println!("cargo:rustc-link-search=native={}", symengine_lib);
+                        println!("cargo:include={}", symengine_include);
+                        println!("cargo:rerun-if-changed={}/include/symengine/cwrapper.h", symengine_opt_path);
+                    }
+                }
                 
                 // Add specific paths for dependencies
                 for dep in &["gmp", "mpfr", "symengine"] {
@@ -175,6 +191,7 @@ fn generate_bindings() {
     {
         clang_args.push("-I/opt/homebrew/include".to_string());
         clang_args.push("-I/usr/local/include".to_string());
+        clang_args.push("-I/opt/homebrew/opt/symengine/include".to_string());
         // Use libc++ on macOS
         clang_args.push("-stdlib=libc++".to_string());
     }
